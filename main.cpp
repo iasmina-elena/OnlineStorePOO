@@ -45,12 +45,13 @@ int main() {
 
     // este mai mult un demo ca sa folosesc toate functiile
     try {
-        Product* p1 = store.getProductByIdPublic(1);
+        const Product* p1 = store.getProductByIdPublic(1);
         std::cout << "Produs #1 type: " << p1->type()
                   << " stock: " << p1->getStock() << "\n";
+        std::cout << "Pret: " << p1->getPrice() << "\n";
 
         Product* p10 = store.getProductByIdPublic(10);
-        if (auto prem = dynamic_cast<PremiumClothing*>(p10)) {
+        if (const auto* prem = dynamic_cast<const PremiumClothing*>(p10)) {
             std::cout << "Premium material: " << prem->getMaterial()
                       << " warranty: " << prem->getWarrantyMonths() << "\n";
         }

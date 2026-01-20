@@ -43,7 +43,7 @@ int Store::placeOrderOneItem(int productId, int A, const std::string& address, P
 }
 
 double Store::previewOrderCost(int productId, int A) const {
-    Product* p = findProductById(productId);
+    const Product* p = findProductById(productId);
     if (A <= 0) throw std::runtime_error("Cantitate invalida!");
 
     double sum = 0.0;
