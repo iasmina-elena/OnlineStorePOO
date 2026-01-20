@@ -50,11 +50,13 @@ int main() {
                   << " stock: " << p1->getStock() << "\n";
         std::cout << "Pret: " << p1->getPrice() << "\n";
 
-        Product* p10 = store.getProductByIdPublic(10);
+        const Product* p10 = store.getProductByIdPublic(10);
         if (const auto* prem = dynamic_cast<const PremiumClothing*>(p10)) {
             std::cout << "Premium material: " << prem->getMaterial()
                       << " warranty: " << prem->getWarrantyMonths() << "\n";
         }
+        Clothing tmp("tmp", 0.0, 1, "M");
+        std::cout << tmp.returnWindowDays() << "ignora\n";
     } catch (...) {// vreau sa ingor erorile din acest demo
     }
 
