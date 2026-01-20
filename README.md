@@ -98,3 +98,4 @@ Nerespectarea duce la nepunctarea proiectului
 
 * folderele `build/` și `install_dir/` sunt adăugate în fișierul `.gitignore` deoarece
 conțin fișiere generate și nu ne ajută să le versionăm.
+
