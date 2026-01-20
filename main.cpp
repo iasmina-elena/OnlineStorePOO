@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <limits>
 
 #include "Store.h"
 #include "Clothing.h"
@@ -9,6 +10,16 @@
 #include "CardPayment.h"
 #include "CashOnDelivery.h"
 #include "Box.h"
+
+template <typename T>
+bool read(T& x) {
+    if (std::cin >> x) return true;
+    if (!std::cin.eof()) {
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+    return false;
+}
 
 int main() {
     Store store;
@@ -28,8 +39,6 @@ int main() {
     std::cout << "Client ID: " << client.getId()
               << " | Adresa: " << client.getAddress() << "\n";
 
-
-    // produsele din store
     store.addProduct(new Clothing("Tricou", 50, 10, "M"));
     store.addProduct(new Clothing("Bluza", 120, 8, "L"));
     store.addProduct(new Clothing("Geaca", 300, 5, "XL"));
@@ -43,7 +52,6 @@ int main() {
     store.addProduct(new Footwear("Ghete", 350, 3, 43));
     store.addProduct(new Footwear("Sandale", 100, 10, 40));
 
-    // este mai mult un demo ca sa folosesc toate functiile
     try {
         const Product* p1 = store.getProductByIdPublic(1);
         std::cout << "Produs #1 type: " << p1->type()
@@ -55,30 +63,17 @@ int main() {
             std::cout << "Premium material: " << prem->getMaterial()
                       << " warranty: " << prem->getWarrantyMonths() << "\n";
         }
+
         Clothing tmp("tmp", 0.0, 1, "M");
-        std::cout << tmp.returnWindowDays() << "ignora\n";
-    } catch (...) {// vreau sa ingor erorile din acest demo
-    }
+        std::cout << tmp.returnWindowDays() << " ignora\n";
+    } catch (...) {}
 
     while (true) {
         try {
-            // meniul aplicatiei
-
             std::cout << "============================================\n";
             std::cout << "Client: " << client << "\n";
             std::cout << "============================================\n";
-            std::cout << "\n--- REGULI PRET / DISCOUNT ---\n";
-            std::cout << "1) Daca totalul > 500 lei => reducere -100 lei\n";
-            std::cout << "2) Daca totalul < 100 lei => taxa transport +20 lei\n";
-            std::cout << "3) PremiumClothing:\n";
-            std::cout << "   - Garantie >= 24 luni => -10%\n";
-            std::cout << "   - Garantie >= 12 luni => -5%\n";
-            std::cout << "4) Plata:\n";
-            std::cout << "   - Ramburs: fee 5 lei\n";
-            std::cout << "   - Card: +2% fee\n";
-            std::cout << "-----------------------------\n\n";
 
-            std::cout << "============================================\n";
             std::cout << "\n--- MENIU ---\n";
             std::cout << "1. Afiseaza produse\n";
             std::cout << "2. Plaseaza comanda\n";
@@ -90,29 +85,25 @@ int main() {
             std::cout << "============================================\n";
 
             int opt;
-            std::cin >> opt;
+            if (!read(opt)) break;
 
             if (opt == 1) {
                 store.listProducts();
             }
             else if (opt == 2) {
-                std::cout << "Metodat de plata -> 0 = ramburs, 1 = card : ";
+                std::cout << "Metoda de plata -> 0 = ramburs, 1 = card : ";
                 int payOpt;
-                std::cin>>payOpt;
+                if (!read(payOpt)) break;
 
                 PaymentMethod* pay = nullptr;
 
                 if (payOpt == 1) {
                     std::string last4;
                     std::cout << "Ultimele 4 cifre card: ";
-                    std::cin >> last4;
-                    // aceeasi explicatie ca si mai sus la demo
-                    CardPayment demo(last4);
-                    std::cout << "last4: " << demo.getLast4() << "\n";
+                    if (!read(last4)) break;
 
                     pay = new CardPayment(last4);
-                }
-                else {
+                } else {
                     pay = new CashOnDelivery();
                 }
 
@@ -121,9 +112,10 @@ int main() {
                 while (true) {
                     int id, A;
                     std::cout << "ID produs: ";
-                    std::cin >> id;
+                    if (!read(id)) { delete pay; return 0; }
+
                     std::cout << "Cantitate: ";
-                    std::cin >> A;
+                    if (!read(A)) { delete pay; return 0; }
 
                     Product* p = store.getProductByIdPublic(id);
 
@@ -141,22 +133,23 @@ int main() {
 
                     std::cout << "Mai adaugi produse? (y/n): ";
                     char ans;
-                    std::cin >> ans;
+                    if (!read(ans)) { delete pay; return 0; }
                     if (ans == 'n' || ans == 'N') break;
                 }
+
                 std::cout << "Adresa livrare: ";
-                std::cin.ignore(); // consuma '\n' ramas dupa ultimul cin >>
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 std::string address;
-                std::getline(std::cin, address);
+                if (!std::getline(std::cin, address)) { delete pay; break; }
 
                 double total = store.previewOrderCost(cart, *pay);
 
                 if (total > client.getBudget()) {
                     std::cout << "Buget insuficient! Cost comanda: " << total << " lei\n";
-                    delete pay; // important: ca sa nu curga
+                    delete pay;
                 }
                 else {
-                    int idComanda = store.placeOrder(cart, address, pay); // Store/Order preiau ownership
+                    int idComanda = store.placeOrder(cart, address, pay);
                     client.setBudget(client.getBudget() - total);
 
                     std::cout << "Comanda plasata cu succes!\n";
@@ -170,7 +163,7 @@ int main() {
             else if (opt == 4) {
                 int orderId;
                 std::cout << "ID comanda: ";
-                std::cin >> orderId;
+                if (!read(orderId)) break;
 
                 double refund = store.returnOrderById(orderId);
                 client += refund;
@@ -188,9 +181,12 @@ int main() {
                 std::cout << "Optiune invalida!\n";
             }
         }
-        catch ( const std::exception& e) {
+        catch (const std::exception& e) {
             std::cout << "Eroare: " << e.what() << "\n";
             return 0;
         }
     }
+
+    return 0;
 }
+

@@ -1,4 +1,5 @@
 #include "CardPayment.h"
+#include <stdexcept>
 
 CardPayment::CardPayment(const std::string& last4) : last4(last4) {}
 
