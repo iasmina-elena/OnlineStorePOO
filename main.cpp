@@ -1,48 +1,193 @@
 #include <iostream>
-#include <array>
+#include <vector>
+
+#include "Store.h"
+#include "Clothing.h"
+#include "Footwear.h"
+#include "PremiumClothing.h"
+#include "Customer.h"
+#include "CardPayment.h"
+#include "CashOnDelivery.h"
+#include "Box.h"
 
 int main() {
-    std::cout << "Hello, world!\n";
-    std::array<int, 100> v{};
-    int nr;
-    std::cout << "Introduceți nr: ";
-    /////////////////////////////////////////////////////////////////////////
-    /// Observație: dacă aveți nevoie să citiți date de intrare de la tastatură,
-    /// dați exemple de date de intrare folosind fișierul tastatura.txt
-    /// Trebuie să aveți în fișierul tastatura.txt suficiente date de intrare
-    /// (în formatul impus de voi) astfel încât execuția programului să se încheie.
-    /// De asemenea, trebuie să adăugați în acest fișier date de intrare
-    /// pentru cât mai multe ramuri de execuție.
-    /// Dorim să facem acest lucru pentru a automatiza testarea codului, fără să
-    /// mai pierdem timp de fiecare dată să introducem de la zero aceleași date de intrare.
-    ///
-    /// Pe GitHub Actions (bife), fișierul tastatura.txt este folosit
-    /// pentru a simula date introduse de la tastatură.
-    /// Bifele verifică dacă programul are erori de compilare, erori de memorie și memory leaks.
-    ///
-    /// Dacă nu puneți în tastatura.txt suficiente date de intrare, îmi rezerv dreptul să vă
-    /// testez codul cu ce date de intrare am chef și să nu pun notă dacă găsesc vreun bug.
-    /// Impun această cerință ca să învățați să faceți un demo și să arătați părțile din
-    /// program care merg (și să le evitați pe cele care nu merg).
-    ///
-    /////////////////////////////////////////////////////////////////////////
-    std::cin >> nr;
-    /////////////////////////////////////////////////////////////////////////
-    for(int i = 0; i < nr; ++i) {
-        std::cout << "v[" << i << "] = ";
-        std::cin >> v[i];
+    Store store;
+    Customer client("Alex", "StradaX", 1000);
+
+    Box<int> boxInt(10);
+    Box<std::string> boxString("Hello!");
+
+    boxInt.print();
+    boxString.print();
+
+    boxInt.setValue(20);
+    std::cout << "get value(int): " << boxInt.getValue() << "\n";
+    boxString.setValue("Hello again!");
+    std::cout << "get value (string): " << boxString.getValue() << "\n";
+
+    std::cout << "Client ID: " << client.getId()
+              << " | Adresa: " << client.getAddress() << "\n";
+
+
+    // produsele din store
+    store.addProduct(new Clothing("Tricou", 50, 10, "M"));
+    store.addProduct(new Clothing("Bluza", 120, 8, "L"));
+    store.addProduct(new Clothing("Geaca", 300, 5, "XL"));
+    store.addProduct(new Clothing("Pantaloni", 150, 7, "M"));
+
+    store.addProduct(new PremiumClothing("HanoracPremium", 260, 4, "L", "Bumbac organic", 24));
+    store.addProduct(new PremiumClothing("PaltonPremium", 700, 2, "XL", "Lana", 12));
+
+    store.addProduct(new Footwear("Adidasi", 200, 6, 42));
+    store.addProduct(new Footwear("Pantofi", 250, 4, 41));
+    store.addProduct(new Footwear("Ghete", 350, 3, 43));
+    store.addProduct(new Footwear("Sandale", 100, 10, 40));
+
+    // este mai mult un demo ca sa folosesc toate functiile
+    try {
+        Product* p1 = store.getProductByIdPublic(1);
+        std::cout << "Produs #1 type: " << p1->type()
+                  << " stock: " << p1->getStock() << "\n";
+
+        Product* p10 = store.getProductByIdPublic(10);
+        if (auto prem = dynamic_cast<PremiumClothing*>(p10)) {
+            std::cout << "Premium material: " << prem->getMaterial()
+                      << " warranty: " << prem->getWarrantyMonths() << "\n";
+        }
+    } catch (...) {// vreau sa ingor erorile din acest demo
     }
-    std::cout << "\n\n";
-    std::cout << "Am citit de la tastatură " << nr << " elemente:\n";
-    for(int i = 0; i < nr; ++i) {
-        std::cout << "- " << v[i] << "\n";
+
+    while (true) {
+        try {
+            // meniul aplicatiei
+
+            std::cout << "============================================\n";
+            std::cout << "Client: " << client << "\n";
+            std::cout << "============================================\n";
+            std::cout << "\n--- REGULI PRET / DISCOUNT ---\n";
+            std::cout << "1) Daca totalul > 500 lei => reducere -100 lei\n";
+            std::cout << "2) Daca totalul < 100 lei => taxa transport +20 lei\n";
+            std::cout << "3) PremiumClothing:\n";
+            std::cout << "   - Garantie >= 24 luni => -10%\n";
+            std::cout << "   - Garantie >= 12 luni => -5%\n";
+            std::cout << "4) Plata:\n";
+            std::cout << "   - Ramburs: fee 5 lei\n";
+            std::cout << "   - Card: +2% fee\n";
+            std::cout << "-----------------------------\n\n";
+
+            std::cout << "============================================\n";
+            std::cout << "\n--- MENIU ---\n";
+            std::cout << "1. Afiseaza produse\n";
+            std::cout << "2. Plaseaza comanda\n";
+            std::cout << "3. Afiseaza comenzi\n";
+            std::cout << "4. Returneaza comanda\n";
+            std::cout << "5. Afiseaza doar PremiumClothing\n";
+            std::cout << "0. Iesire\n";
+            std::cout << "\nCe optiune alegi? \n";
+            std::cout << "============================================\n";
+
+            int opt;
+            std::cin >> opt;
+
+            if (opt == 1) {
+                store.listProducts();
+            }
+            else if (opt == 2) {
+                std::cout << "Metodat de plata -> 0 = ramburs, 1 = card : ";
+                int payOpt;
+                std::cin>>payOpt;
+
+                PaymentMethod* pay = nullptr;
+
+                if (payOpt == 1) {
+                    std::string last4;
+                    std::cout << "Ultimele 4 cifre card: ";
+                    std::cin >> last4;
+                    // aceeasi explicatie ca si mai sus la demo
+                    CardPayment demo(last4);
+                    std::cout << "last4: " << demo.getLast4() << "\n";
+
+                    pay = new CardPayment(last4);
+                }
+                else {
+                    pay = new CashOnDelivery();
+                }
+
+                std::vector<OrderItem> cart;
+
+                while (true) {
+                    int id, A;
+                    std::cout << "ID produs: ";
+                    std::cin >> id;
+                    std::cout << "Cantitate: ";
+                    std::cin >> A;
+
+                    Product* p = store.getProductByIdPublic(id);
+
+                    bool merged = false;
+                    for (auto& it : cart) {
+                        if (it.product->getID() == p->getID()) {
+                            it.quantity += A;
+                            merged = true;
+                            break;
+                        }
+                    }
+                    if (!merged) {
+                        cart.push_back({p, A});
+                    }
+
+                    std::cout << "Mai adaugi produse? (y/n): ";
+                    char ans;
+                    std::cin >> ans;
+                    if (ans == 'n' || ans == 'N') break;
+                }
+                std::cout << "Adresa livrare: ";
+                std::cin.ignore(); // consuma '\n' ramas dupa ultimul cin >>
+                std::string address;
+                std::getline(std::cin, address);
+
+                double total = store.previewOrderCost(cart, *pay);
+
+                if (total > client.getBudget()) {
+                    std::cout << "Buget insuficient! Cost comanda: " << total << " lei\n";
+                    delete pay; // important: ca sa nu curga
+                }
+                else {
+                    int idComanda = store.placeOrder(cart, address, pay); // Store/Order preiau ownership
+                    client.setBudget(client.getBudget() - total);
+
+                    std::cout << "Comanda plasata cu succes!\n";
+                    std::cout << "ID comanda: " << idComanda << "\n";
+                    std::cout << "Buget ramas: " << client.getBudget() << " lei\n";
+                }
+            }
+            else if (opt == 3) {
+                store.listOrders();
+            }
+            else if (opt == 4) {
+                int orderId;
+                std::cout << "ID comanda: ";
+                std::cin >> orderId;
+
+                double refund = store.returnOrderById(orderId);
+                client += refund;
+
+                std::cout << "Ai primit inapoi: " << refund << " lei\n";
+                std::cout << "Buget acum: " << client.getBudget() << " lei\n";
+            }
+            else if (opt == 5) {
+                store.listPremiumClothingOnly();
+            }
+            else if (opt == 0) {
+                break;
+            }
+            else {
+                std::cout << "Optiune invalida!\n";
+            }
+        }
+        catch ( const std::exception& e) {
+            std::cout << "Eroare: " << e.what() << "\n";
+            return 0;
+        }
     }
-    ///////////////////////////////////////////////////////////////////////////
-    /// Pentru date citite din fișier, NU folosiți tastatura.txt. Creați-vă voi
-    /// alt fișier propriu cu ce alt nume doriți.
-    /// Exemplu:
-    /// std::ifstream fis("date.txt");
-    /// for(int i = 0; i < nr2; ++i)
-    ///     fis >> v2[i];
-    return 0;
 }
