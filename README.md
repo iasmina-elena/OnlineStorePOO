@@ -1,101 +1,77 @@
-# Nu primesc notă pentru că nu am pus titlu și descriere
+# 🛒 Online Store 
 
-### Folosiți template-ul corespunzător grupei voastre!
+## Descrierea proiectului
 
-| Laborant  | Link template                                |
-|-----------|----------------------------------------------|
-| Dragoș B  | https://github.com/Ionnier/oop-template      |
-| Tiberiu M | https://github.com/MaximTiberiu/oop-template |
-| Marius MC | https://github.com/mcmarius/oop-template     |
+Acest proiect implementează o aplicație tip **magazin online** în C++, construită pe baza principiilor Programării Orientate pe Obiecte (POO). Aplicația oferă funcționalități de gestionare a produselor, plasare și returnare de comenzi, calcularea costului total pe baza unor reguli comerciale și interacțiune cu utilizatorul printr-un meniu simplu în consolă.
 
-## Instrucțiuni de compilare
+---
 
-Proiectul este configurat cu CMake.
+## 🚀 Funcționalități End User
 
-Instrucțiuni pentru terminal:
+Prin intermediul meniului din consolă, utilizatorul poate:
 
-1. Pasul de configurare
-```sh
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
-# sau ./scripts/cmake.sh configure
-```
+- Vizualiza lista completă de produse disponibile
+- Plasa o comandă selectând produsele și cantitățile dorite
+- Alege metoda de plată (Card sau Ramburs)
+- Introduce adresa de livrare
+- Vizualiza comenzile deja plasate
+- Returna comenzi acceptate, cu restabilirea automată a bugetului și a stocului
+- Primi mesaje de eroare în caz de acțiuni invalide
 
-Sau pe Windows cu GCC:
-```sh
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -G Ninja
-# sau ./scripts/cmake.sh configure -g Ninja
-```
+---
 
-La acest pas putem cere să generăm fișiere de proiect pentru diverse medii de lucru.
+## 🧠 Concepte și Structură
 
-## Cerințe obligatorii
+Aplicația include următoarele componente:
 
-Nerespectarea duce la nepunctarea proiectului
+### 🏷️ Modele de produs
+- **Product** — clasă abstractă de bază pentru toate produsele
+- **Clothing** — produs de tip „haină”
+- **PremiumClothing** — derivat din Clothing cu funcții extinse
+- **Footwear** — încălțăminte
 
-  - programul va fi scris în C++
-  - programul va avea un meniu interactiv (doar pentru ilustrarea funcționalității)
-  - programul nu are erori de compilare
-  - fară variabile globale
-  - datele membre private(sau protected)
-  - GitHub Actions trecute
-  - commit-uri pe Git adecvate si punctuale
-  - folosirea a funcționalităților limbajului fără sens
-  - folosirea a funcționlităților limbajului cu scopul de a încălca "legal" o altă regulă
-      - folosirea excesivă a claselor friend
-      - folosirea excesviă a elementelor statice
-  - lipsa separarea implementarii de definitie
+### 🧾 Comenzi și stocuri
+- **OrderItem** — o poziție dintr-o comandă
+- **Order** — comandă plasată de client, cu reguli comerciale aplicate
+- **Store** — manager al produselor și comenzilor
 
-## Cerințe
-- [ ] definirea a minim **2-3 ieararhii de clase** care sa interactioneze in cadrul temei alese (fie prin compunere, agregare sau doar sa apeleze metodele celeilalte intr-un mod logic) (6p)
-  - minim o clasa cu:
-    - [ ] constructori de inițializare [*](https://github.com/Ionnier/poo/tree/main/labs/L02#crearea-obiectelor)
-    - [ ] constructor supraîncărcat [*](https://github.com/Ionnier/poo/tree/main/labs/L02#supra%C3%AEnc%C4%83rcarea-func%C8%9Biilor)
-    - [ ] constructori de copiere [*](https://github.com/Ionnier/poo/tree/main/labs/L02#crearea-obiectelor)
-    - [ ] `operator=` de copiere [*](https://github.com/Ionnier/poo/tree/main/labs/L02#supra%C3%AEnc%C4%83rcarea-operatorilor)
-    - [ ] destructor [*](https://github.com/Ionnier/poo/tree/main/labs/L02#crearea-obiectelor)
-    - [ ] `operator<<` pentru afișare (std::ostream) [*](https://github.com/Ionnier/poo/blob/main/labs/L02/fractie.cpp#L123)
-    - [ ] `operator>>` pentru citire (std::istream) [*](https://github.com/Ionnier/poo/blob/main/labs/L02/fractie.cpp#L128)
-    - [ ] alt operator supraîncărcat ca funcție membră [*](https://github.com/Ionnier/poo/blob/main/labs/L02/fractie.cpp#L32)
-    - [ ] alt operator supraîncărcat ca funcție non-membră [*](https://github.com/Ionnier/poo/blob/main/labs/L02/fractie.cpp#L39) - nu neaparat ca friend
-  - in derivate
-      - [ ] implementarea funcționalităților alese prin [upcast](https://github.com/Ionnier/poo/tree/main/labs/L04#solu%C8%9Bie-func%C8%9Bii-virtuale-late-binding) și [downcast](https://github.com/Ionnier/poo/tree/main/labs/L04#smarter-downcast-dynamic-cast)
-        - aceasta va fi făcută prin **2-3** metode specifice temei alese
-        - funcțiile pentru citire / afișare sau destructorul nu sunt incluse deși o să trebuiască să le implementați 
-      - [ ] apelarea constructorului din clasa de bază din [constructori din derivate](https://github.com/Ionnier/poo/tree/main/labs/L04#comportamentul-constructorului-la-derivare)
-      - [ ] suprascris [cc](https://github.com/Ionnier/poo/tree/main/labs/L04#comportamentul-constructorului-de-copiere-la-derivare)/op= pentru copieri/atribuiri corecte
-      - [ ] destructor [virtual](https://github.com/Ionnier/poo/tree/main/labs/L04#solu%C8%9Bie-func%C8%9Bii-virtuale-late-binding)
-  - pentru celelalte clase se va definii doar ce e nevoie
-  - minim o ierarhie mai dezvoltata (cu 2-3 clase dintr-o clasa de baza)
-  - ierarhie de clasa se considera si daca exista doar o clasa de bază însă care nu moștenește dintr-o clasă din altă ierarhie
-- [ ] cât mai multe `const` [(0.25p)](https://github.com/Ionnier/poo/tree/main/labs/L04#reminder-const-everywhere)
-- [ ] funcții și atribute `static` (în clase) [0.5p](https://github.com/Ionnier/poo/tree/main/labs/L04#static)
-  - [ ] 1+ atribute statice non-triviale 
-  - [ ] 1+ funcții statice non-triviale
-- [ ] excepții [0.5p](https://github.com/Ionnier/poo/tree/main/labs/L04#exception-handling)
-  - porniți de la `std::exception`
-  - ilustrați propagarea excepțiilor
-  - ilustrati upcasting-ul în blocurile catch
-  - minim folosit într-un loc în care tratarea erorilor în modurile clasice este mai dificilă
-- [ ] folosirea unei clase abstracte [(0.25p)](https://github.com/Ionnier/poo/tree/main/labs/L04#clase-abstracte)
- - [ ] clase template
-   - [ ] crearea unei clase template [(1p)](https://github.com/Ionnier/poo/tree/main/labs/L08)
-   - [ ] 2 instanțieri ale acestei clase (0.5p)
- - STL [(0.25p)](https://github.com/Ionnier/poo/tree/main/labs/L07#stl)
-   - [ ] utilizarea a două structuri (containere) diferite (vector, list sau orice alt container care e mai mult sau mai putin un array)
-   - [ ] utilizarea a unui algoritm cu funcție lambda (de exemplu, sort, transform)
- - Design Patterns [(0.75p)](https://github.com/Ionnier/poo/tree/main/labs/L08)
-   - [ ] utilizarea a două șabloane de proiectare
+### 💳 Metode de plată
+- **PaymentMethod** — clasă abstractă pentru plata unei comenzi
+- **CardPayment** — plata cu cardul
+- **CashOnDelivery** — plata ramburs
 
-### Observații
+---
 
-* Pot exista depunctări până la 2p pentru diferite aspecte precum:
-  - memory leak-uri
-  - nefolosirea destructorului virtual la nevoie
-  - abuzarea de diferite concepte (toate funcțiile declarate virtual)
-  - apelarea de funcții virtual în constructori
+## 📦 Tehnologii și unelte folosite
 
-* În general, acestea sunt prezente în [CppCoreGuideline](https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md), dar nu e nevoie să parcurgeți documentul, doar să scrieți codul suficient de organizat
+- **Programare Orientată pe Obiecte**  
+  (moștenire, polimorfism, clase abstracte, tratarea excepțiilor)
+---
 
-* folderele `build/` și `install_dir/` sunt adăugate în fișierul `.gitignore` deoarece
-conțin fișiere generate și nu ne ajută să le versionăm.
+## 🧠 Diagrama de moștenire (simplificată)
+
+```mermaid
+classDiagram
+direction TB
+
+class Product {
+  <<abstract>>
+}
+class Clothing
+class PremiumClothing
+class Footwear
+
+Product <|-- Clothing
+Clothing <|-- PremiumClothing
+Product <|-- Footwear
+
+class PaymentMethod {
+  <<abstract>>
+}
+class CardPayment
+class CashOnDelivery
+
+PaymentMethod <|-- CardPayment
+PaymentMethod <|-- CashOnDelivery
+
 
